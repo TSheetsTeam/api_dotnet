@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30723.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSheetsApi", "TSheetsApi\TSheetsApi.csproj", "{A7AED322-D334-404C-B321-D63D4437F4A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiTests", "ApiTests\ApiTests.csproj", "{D0434A28-61D9-444E-A957-BAF157AC6BA6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSheetsApiSamples", "TSheetsApiSamples\TSheetsApiSamples.csproj", "{234F0319-188E-43D5-B2FC-3ECFC9090D24}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A7AED322-D334-404C-B321-D63D4437F4A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7AED322-D334-404C-B321-D63D4437F4A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A7AED322-D334-404C-B321-D63D4437F4A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7AED322-D334-404C-B321-D63D4437F4A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0434A28-61D9-444E-A957-BAF157AC6BA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0434A28-61D9-444E-A957-BAF157AC6BA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0434A28-61D9-444E-A957-BAF157AC6BA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0434A28-61D9-444E-A957-BAF157AC6BA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{234F0319-188E-43D5-B2FC-3ECFC9090D24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{234F0319-188E-43D5-B2FC-3ECFC9090D24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{234F0319-188E-43D5-B2FC-3ECFC9090D24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{234F0319-188E-43D5-B2FC-3ECFC9090D24}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
