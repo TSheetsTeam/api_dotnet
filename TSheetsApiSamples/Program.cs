@@ -79,8 +79,8 @@ namespace TSheetsApiSamples
             // based authentication in a web browser form and prompt the user for credentials.  
             // AuthenticateWithManualToken will do simple AccessToken based authentication using 
             // a manually created token in the API add-on.
-            //AuthenticateWithBrowser();
-            AuthenticateWithManualToken();
+            AuthenticateWithBrowser();
+            //AuthenticateWithManualToken();
 
             GetUserInfoSample();
             GetUsersSample();
@@ -113,6 +113,9 @@ namespace TSheetsApiSamples
             var userAuthProvider = new UserAuthentication(_connection);
             _authProvider = userAuthProvider;
 
+            // optionally register an event handler to be notified if/when the auth
+            // token changes
+            userAuthProvider.TokenChanged += userAuthProvider_TokenChanged;
 
             // Retrieve a token from the server
             // Note: the RestApi class will call this as needed so it isn't required
@@ -126,6 +129,12 @@ namespace TSheetsApiSamples
             // To do this, call OAuthToken.ToJSon to get a serialized version of
             // the token that can be used later.  Be sure to treat this string as a 
             // user password and store it securely!
+            // Note that this token will potentially be refreshed during API usage
+            // using the OAuth2 token refresh protocol.  If that happens, your application
+            // should overwrite the previously saved token with the new token value.
+            // You can register for the TokenChanged event to be notified of any new/changed tokens
+            // or you can call UserAuthentication.GetToken().ToJson() after using the API 
+            // to manually retrieve the most current token.
             string savedToken = authToken.ToJson();
 
             // This can be restored into a UserAuthentication object later to reuse:
@@ -134,6 +143,22 @@ namespace TSheetsApiSamples
 
             // Now the user will not be prompted when we call GetToken
             OAuthToken cachedToken = restoredAuthProvider.GetToken();
+        }
+
+        /// <summary>
+        /// Event handler that will be called when the UserAuthentication OAuthToken changes
+        /// </summary>
+        static void userAuthProvider_TokenChanged(object sender, TokenChangedEventArgs e)
+        {
+            if (e.CurrentToken != null)
+            {
+                System.Console.WriteLine("Received new auth token:");
+                System.Console.WriteLine(e.CurrentToken.ToJson());
+            }
+            else
+            {
+                System.Console.WriteLine("Token no longer valid");
+            }
         }
 
         /// <summary>

@@ -52,6 +52,25 @@ namespace TSheets
         }
     }
 
+    /// <summary>
+    /// TokenChanged event arguments
+    /// </summary>
+    public class TokenChangedEventArgs : EventArgs
+    {
+        internal TokenChangedEventArgs(OAuthToken token)
+        {
+            CurrentToken = token;
+        }
+
+        /// <summary>
+        /// The new auth token. May be null if the current token is no longer valid
+        /// </summary>
+        public OAuthToken CurrentToken
+        {
+            get;
+            internal set;
+        }
+    }
 
     /// <summary>
     /// Implementation of the IOAuth2Info interface for user/desktop authentication.
@@ -104,11 +123,44 @@ namespace TSheets
             }
             else if (_token.NeedsRefresh())
             {
-                return RestClient.RefreshToken(_token.refresh_token, _connectionInfo);
+                _token = null;
+                try
+                {
+                    _token = RestClient.RefreshToken(_token.refresh_token, _connectionInfo);
+                }
+                catch (ApiException ex)
+                {
+                    if (ex.HttpCode != "404")
+                    {
+                        // unexpected refresh error
+                        throw;
+                    }
+                    // else the server didn't like the refresh token so it's now invalid
+                }
+                
+                OnTokenChanged(_token);
+                return _token;
             }
             else
             {
                 return _token;
+            }
+        }
+
+        /// <summary>
+        /// TokenChanged event to notify users when the auth token changes
+        /// </summary>
+        public event EventHandler<TokenChangedEventArgs> TokenChanged;
+
+        /// <summary>
+        /// Handles sending the TokenChanged event
+        /// </summary>
+        /// <param name="newToken">the new OAuth token</param>
+        protected virtual void OnTokenChanged(OAuthToken newToken)
+        {
+            if (TokenChanged != null)
+            {
+                TokenChanged(this, new TokenChangedEventArgs(newToken));
             }
         }
 
@@ -119,6 +171,8 @@ namespace TSheets
         private OAuthToken Authenticate()
         {
             Exception threadException = null;
+
+            _token = null;
 
             // The WebBrowser must run on an STA thread, so to be safe just fire up our own
             var authThread = new Thread(() =>
@@ -138,6 +192,7 @@ namespace TSheets
             authThread.Start();
             authThread.Join();
 
+            OnTokenChanged(_token);
             if (threadException != null)
             {
                 throw threadException;
@@ -146,6 +201,10 @@ namespace TSheets
             return _token;
         }
 
+        /// <summary>
+        /// Performs the actual authentication in an embedded WebBrowser form
+        /// </summary>
+        /// <returns>the oauth token</returns>
         private OAuthToken DoAuthentication()
         {
             OAuthToken authToken = null;
