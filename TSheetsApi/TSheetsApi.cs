@@ -353,6 +353,8 @@ namespace TSheets
                     return "timesheets_deleted";
                 case ObjectType.Geolocations:
                     return "geolocations";
+                case ObjectType.LastModified:
+                    return "last_modified_timestamps";
                 default:
                     Debug.Assert(false, "Unknown ObjectType: " + objectType);
                     throw new NotImplementedException("Unknown endpoint for ObjectType: " + objectType);
@@ -414,6 +416,7 @@ namespace TSheets
         Timesheets,
         TimesheetsDeleted,
         Geolocations,
+        LastModified,
     }
 
     /// <summary>

@@ -223,6 +223,11 @@ namespace TSheets
         [TestMethod]
         public void TestAddDeleteTimesheet()
         {
+            TestAddDeleteTimesheet(true);
+        }
+
+        private void TestAddDeleteTimesheet(bool delete)
+        {
             var result = _api.Get(ObjectType.CurrentUser);
             var currentUser = JObject.Parse(result).SelectToken("results.users.*");
 
@@ -261,21 +266,27 @@ namespace TSheets
             var addedTimesheets = JObject.Parse(result).SelectTokens("results.timesheets.*");
             Assert.IsNotNull(addedTimesheets);
 
-            var idsToDelete = new List<int>();
-            foreach (var ts in addedTimesheets)
+            if (delete)
             {
-                idsToDelete.Add((int)ts["id"]);
-            }
+                var idsToDelete = new List<int>();
+                foreach (var ts in addedTimesheets)
+                {
+                    idsToDelete.Add((int)ts["id"]);
+                }
 
-            Assert.IsTrue(idsToDelete.Count > 0);
-            result = _api.Delete(ObjectType.Timesheets, idsToDelete);
-            var deleteResult = JObject.Parse(result);
-            Assert.IsNotNull(deleteResult);
+                Assert.IsTrue(idsToDelete.Count > 0);
+                result = _api.Delete(ObjectType.Timesheets, idsToDelete);
+                var deleteResult = JObject.Parse(result);
+                Assert.IsNotNull(deleteResult);
+            }
         }
 
         [TestMethod]
         public void TestProjectReport()
         {
+            // create some data to report against
+            TestAddDeleteTimesheet(false);
+
             DateTime today = DateTime.Now;
             string todayString = today.ToString("yyyy-MM-dd");
             DateTime tomorrow = today + new TimeSpan(1, 0, 0, 0);
@@ -320,7 +331,38 @@ namespace TSheets
                 total_work_seconds += userTotal["total_work_seconds"].Value;
             }
             Assert.IsTrue(total_work_seconds > 0);
+        }
 
+        [TestMethod]
+        public void TestLastModEndpoints()
+        {
+            var baseTimeStampResponse = _api.Get(ObjectType.LastModified);
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(baseTimeStampResponse));
+            var baseTimeStampObjects = JObject.Parse(baseTimeStampResponse);
+            Assert.IsNotNull(baseTimeStampObjects);
+            var baseLastModTimestamps = baseTimeStampObjects.SelectToken("results.*");
+            
+            System.Threading.Thread.Sleep(2000);
+
+            // no changes - timestamps should be the same
+            var lastModTimestamps = JObject.Parse(_api.Get(ObjectType.LastModified)).SelectToken("results.*");
+            Assert.IsTrue(string.Equals(baseLastModTimestamps["current_user"], lastModTimestamps["current_user"]));
+            Assert.IsTrue(string.Equals(baseLastModTimestamps["customfields"], lastModTimestamps["customfields"]));
+            Assert.IsTrue(string.Equals(baseLastModTimestamps["jobcodes"], lastModTimestamps["jobcodes"]));
+            Assert.IsTrue(string.Equals(baseLastModTimestamps["timesheets"], lastModTimestamps["timesheets"]));
+            Assert.IsTrue(string.Equals(baseLastModTimestamps["timesheets_deleted"], lastModTimestamps["timesheets_deleted"]));
+            Assert.IsTrue(string.Equals(baseLastModTimestamps["users"], lastModTimestamps["users"]));
+
+            TestAddDeleteTimesheet();
+
+            // timesheets_deleted endpoint should show that a change has been made
+            lastModTimestamps = JObject.Parse(_api.Get(ObjectType.LastModified)).SelectToken("results.*");            
+            Assert.IsTrue(string.Equals(baseLastModTimestamps["current_user"], lastModTimestamps["current_user"]));
+            Assert.IsTrue(string.Equals(baseLastModTimestamps["customfields"], lastModTimestamps["customfields"]));
+            Assert.IsTrue(string.Equals(baseLastModTimestamps["jobcodes"], lastModTimestamps["jobcodes"]));                        
+            Assert.IsTrue(string.Equals(baseLastModTimestamps["timesheets"], lastModTimestamps["timesheets"]));
+            Assert.IsFalse(string.Equals(baseLastModTimestamps["timesheets_deleted"], lastModTimestamps["timesheets_deleted"]));
+            Assert.IsTrue(string.Equals(baseLastModTimestamps["users"], lastModTimestamps["users"]));
         }
     }
 }
