@@ -25,9 +25,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
-
-using TSheets;
 using Newtonsoft.Json.Linq;
+using TSheets;
 
 namespace TSheetsApiSamples
 {
@@ -89,6 +88,8 @@ namespace TSheetsApiSamples
             ProjectReportSample();
 
             AddEditDeleteTimesheetSample();
+
+            GetJobcodesByPageSample();
         }
 
         /// <summary>
@@ -229,6 +230,52 @@ namespace TSheetsApiSamples
         }
 
         /// <summary>
+        /// The Get api calls can potentially return many records from the server. The TSheets rest APIs
+        /// support a paging request model so API clients can request records in smaller chunks.
+        /// This sample shows how to request all available jobcodes using paging filters to retrieve
+        /// the records this way.
+        /// </summary>
+        private static void GetJobcodesByPageSample()
+        {
+            var tsheetsApi = new RestClient(_connection, _authProvider);
+            var filters = new Dictionary<string, string>();
+
+            // start by requesting the first page
+            int currentPage = 1;
+
+            // and set our items per page to be 2
+            // Note: 50 is the recommended per_page value for normal usage. This sample
+            // is using a smaller number to make the sample more clear. Be sure to 
+            // manually create >2 jobcodes in your account to see the paging happen.
+            filters["per_page"] = "2";
+
+            bool moreData = true;
+            while (moreData)
+            {
+                filters["page"] = currentPage.ToString();
+
+                var getResponse = tsheetsApi.Get(ObjectType.Jobcodes, filters);
+                var responseObject = JObject.Parse(getResponse);
+
+                // see if we have more pages to retrieve
+                moreData = bool.Parse(responseObject.SelectToken("more").ToString());
+
+                // increment to the next page
+                currentPage++;
+
+                var jobcodes = responseObject.SelectTokens("results.jobcodes.*");
+                foreach (var jobcode in jobcodes)
+                {
+                    Console.WriteLine(string.Format("Jobcode Name: {0}, type = {1}, shortcode = {2}",
+                        jobcode["name"],
+                        jobcode["type"],
+                        jobcode["short_code"]));
+                }
+            }
+        }
+
+
+        /// <summary>
         /// Shows how to create a user, create a jobcode, log time against it, and then run a project report
         /// that shows them
         /// </summary>
@@ -323,7 +370,7 @@ namespace TSheetsApiSamples
 
             var result = tsheetsApi.Add(ObjectType.Timesheets, timesheetsToAdd);
             Console.WriteLine(result);
-            
+
             // pull out the ids of the new timesheets
             var addedTimesheets = JObject.Parse(result).SelectTokens("results.timesheets.*");
             var timesheetIds = new List<int>();
