@@ -263,6 +263,9 @@ namespace TSheets
 
             try
             {
+                // force the https connection to use TLS 1.2
+                System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
                 var request = (HttpWebRequest)WebRequest.Create(requestUrl);
                 request.UserAgent = USER_AGENT;
                 request.Method = method;
@@ -374,6 +377,10 @@ namespace TSheets
                     return "reports/project";
                 case ReportType.Payroll:
                     return "reports/payroll";
+                case ReportType.CurrentTotals:
+                    return "reports/current_totals";
+                case ReportType.Custom:
+                    return "reports/custom_reports";
                 default:
                     Debug.Assert(false, "Unknown ReportType: " + reportType);
                     throw new NotImplementedException("Unknown endpoint for ReportType: " + reportType);
@@ -426,6 +433,8 @@ namespace TSheets
     {
         Project,
         Payroll,
+        CurrentTotals,
+        Custom
     }
 
     /// <summary>
