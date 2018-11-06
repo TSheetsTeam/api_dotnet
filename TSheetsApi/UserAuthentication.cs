@@ -123,10 +123,11 @@ namespace TSheets
             }
             else if (_token.NeedsRefresh())
             {
+                var refreshToken = _token.refresh_token;
                 _token = null;
                 try
                 {
-                    _token = RestClient.RefreshToken(_token.refresh_token, _connectionInfo);
+                    _token = RestClient.RefreshToken(refreshToken, _connectionInfo);
                 }
                 catch (ApiException ex)
                 {
