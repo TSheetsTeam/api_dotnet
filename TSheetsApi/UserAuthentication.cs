@@ -127,7 +127,7 @@ namespace TSheets
                 _token = null;
                 try
                 {
-                    _token = RestClient.RefreshToken(refreshToken.refresh_token, _connectionInfo);
+                    _token = RestClient.RefreshToken(refreshToken, _connectionInfo);
                 }
                 catch (ApiException ex)
                 {
