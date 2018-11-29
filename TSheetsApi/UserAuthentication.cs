@@ -138,7 +138,7 @@ namespace TSheets
                     }
                     // else the server didn't like the refresh token so it's now invalid
                 }
-                
+
                 OnTokenChanged(_token);
                 return _token;
             }

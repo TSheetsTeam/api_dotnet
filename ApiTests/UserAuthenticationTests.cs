@@ -54,5 +54,15 @@ namespace TSheets
             var authToken = userAuth.GetAccessToken();
             Assert.IsNotNull(authToken);
         }
+
+        [TestMethod]
+        public void TestRefreshAuth()
+        {
+            var connection = new ConnectionInfo(_baseUri, _clientId, _redirectUri, _clientSecret);
+            var userAuth = new UserAuthentication(connection);
+
+            var authToken = userAuth.GetAccessToken();
+            Assert.IsNotNull(authToken);
+        }
     }
 }
