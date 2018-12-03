@@ -43,6 +43,10 @@ namespace TSheets
             _clientId = Environment.GetEnvironmentVariable("TSHEETS_CLIENTID");
             _redirectUri = Environment.GetEnvironmentVariable("TSHEETS_REDIRECTURI");
             _clientSecret = Environment.GetEnvironmentVariable("TSHEETS_CLIENTSECRET");
+
+            Assert.IsNotNull(_clientId);
+            Assert.IsNotNull(_redirectUri);
+            Assert.IsNotNull(_clientSecret);
         }
 
         [TestMethod]        
@@ -53,6 +57,19 @@ namespace TSheets
 
             var authToken = userAuth.GetAccessToken();
             Assert.IsNotNull(authToken);
+        }
+
+        [TestMethod]
+        public void TestTokenRefresh()
+        {
+            var connection = new ConnectionInfo(_baseUri, _clientId, _redirectUri, _clientSecret);
+            var userAuth = new UserAuthentication(connection);
+
+            var authToken = userAuth.GetToken();
+
+            var refreshedAuthToken = RestClient.RefreshToken(authToken, connection);
+            Assert.IsNotNull(refreshedAuthToken);
+            Assert.IsNotNull(refreshedAuthToken.access_token);
         }
     }
 }

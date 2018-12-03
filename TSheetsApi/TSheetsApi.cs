@@ -193,10 +193,10 @@ namespace TSheets
         /// <summary>
         /// Refreshes the access token
         /// </summary>
-        /// <param name="refreshToken">The refresh token to exhange for a new access token</param>
+        /// <param name="token">The OAuthToken with a refresh token to exchange for a new access token</param>
         /// <param name="connectionInfo">the server/API connection information</param>
         /// <returns>The refreshed OAuthToken from the server</returns>
-        public static OAuthToken RefreshToken(string refreshToken, ConnectionInfo connectionInfo)
+        public static OAuthToken RefreshToken(OAuthToken token, ConnectionInfo connectionInfo)
         {
             string grantUri = string.Format("{0}/grant", connectionInfo.BaseUri);
 
@@ -204,9 +204,11 @@ namespace TSheets
             string postData = string.Format("grant_type=refresh_token&client_id={0}&client_secret={1}&refresh_token={2}",
                 connectionInfo.ClientId,
                 connectionInfo.ClientSecret,
-                refreshToken);
+                token.refresh_token);
 
-            string responseData = SendRequest(grantUri, "POST", null, null, "application/x-www-form-urlencoded", postData);
+            var headers = new List<string> { $"Authorization: Bearer {token.access_token}" };
+
+            string responseData = SendRequest(grantUri, "POST", null, headers, "application/x-www-form-urlencoded", postData);
 
             var newToken = OAuthToken.FromJson(responseData);
             newToken.issued = DateTime.UtcNow;

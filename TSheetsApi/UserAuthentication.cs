@@ -123,11 +123,11 @@ namespace TSheets
             }
             else if (_token.NeedsRefresh())
             {
-                var refreshToken = _token.refresh_token;
+                var currentToken = _token;
                 _token = null;
                 try
                 {
-                    _token = RestClient.RefreshToken(refreshToken, _connectionInfo);
+                    _token = RestClient.RefreshToken(currentToken, _connectionInfo);
                 }
                 catch (ApiException ex)
                 {
@@ -138,7 +138,7 @@ namespace TSheets
                     }
                     // else the server didn't like the refresh token so it's now invalid
                 }
-                
+
                 OnTokenChanged(_token);
                 return _token;
             }
@@ -271,6 +271,7 @@ namespace TSheets
 
             // Now we can switch over to the auth dialog
             webBrowser.Navigate(authUri);
+            parentForm.Show();
             Application.Run(parentForm);
 
             if (authException != null)
