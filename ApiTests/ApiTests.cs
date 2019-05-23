@@ -124,6 +124,52 @@ namespace TSheets
         }
 
         [TestMethod]
+        public void TestAddEditGroups()
+        {
+            var rand = new Random();
+
+            var groups = new List<JObject>();
+
+            dynamic newGroup1 = new JObject();
+            newGroup1.name = "g" + rand.Next(1000).ToString();
+            groups.Add(newGroup1);
+
+            dynamic newGroup2 = new JObject();
+            newGroup2.name = "g" + rand.Next(1000).ToString();
+            groups.Add(newGroup2);
+
+            var response = _api.Add(ObjectType.Groups, groups);
+
+            var json = JObject.Parse(response);
+            Assert.IsNotNull(json);
+
+            var savedGroup1 = json.SelectToken("results.groups.1");
+            Assert.IsNotNull(savedGroup1);
+            Assert.IsTrue(string.Equals(newGroup1.name.ToString(), savedGroup1["name"].ToString()));
+
+            var savedGroup2 = json.SelectToken("results.groups.2");
+            Assert.IsNotNull(savedGroup2);
+            Assert.IsTrue(string.Equals(newGroup2.name.ToString(), savedGroup2["name"].ToString()));
+
+
+            // try to edit the 2nd one
+            dynamic editGroup2 = new JObject();
+            editGroup2.id = savedGroup2["id"];
+            editGroup2.name = savedGroup2["name"] + "edited";
+
+            var editGroups = new List<JObject>();
+            editGroups.Add(editGroup2);
+            var editResponse = _api.Edit(ObjectType.Groups, editGroups);
+
+            json = JObject.Parse(editResponse);
+            Assert.IsNotNull(json);
+
+            var savedGroup = json.SelectToken("results.groups.1");
+            Assert.IsNotNull(savedGroup);
+            Assert.IsTrue(string.Equals(editGroup2.name.ToString(), savedGroup["name"].ToString()));
+        }
+
+        [TestMethod]
         public void TestBadAuthToken()
         {
             StaticAuthentication badAuth = new StaticAuthentication("garbagein_garbageout");

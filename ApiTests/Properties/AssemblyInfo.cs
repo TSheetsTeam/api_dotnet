@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("ApiTests")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("TSheetsApiTests")]
+[assembly: AssemblyDescription("TSheets.com API Client Tests")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ApiTests")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
+[assembly: AssemblyCompany("Intuit Inc.")]
+[assembly: AssemblyProduct("TSheetsApiTests")]
+[assembly: AssemblyCopyright("Copyright (c) 2019 Intuit Inc.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
