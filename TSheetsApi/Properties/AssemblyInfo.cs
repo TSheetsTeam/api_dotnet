@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("TSheetsApi")]
 [assembly: AssemblyDescription("TSheets.com API Client")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("TSheets.com")]
+[assembly: AssemblyCompany("Intuit Inc.")]
 [assembly: AssemblyProduct("TSheetsApi")]
-[assembly: AssemblyCopyright("Copyright (c) 2014 TSheets.com, LLC.")]
+[assembly: AssemblyCopyright("Copyright (c) 2019 Intuit Inc.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
